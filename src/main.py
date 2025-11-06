@@ -1,34 +1,31 @@
-import argparse
-from main import add_task, list_tasks, mark_done
+import typer
+from src.main import add_task, list_tasks, mark_done
 
-def main():
-    parser = argparse.ArgumentParser(
-        description="Task Manager CLI - Manage your tasks easily"
-    )
+app = typer.Typer(help="Task Manager CLI - Manage your tasks easily")
 
-    subparsers = parser.add_subparsers(dest="command", help="Available commands")
+@app.command()
+def add(description: str):
+    """Add a new task"""
+    add_task(description)
+    typer.echo(f"✅ Task added: {description}")
 
-    # Add Task
-    parser_add = subparsers.add_parser("add", help="Add a new task")
-    parser_add.add_argument("description", type=str, help="Task description")
+@app.command()
+def list():
+    """List all tasks"""
+    list_tasks()
 
-    # List Tasks
-    subparsers.add_parser("list", help="List all tasks")
-
-    # Mark Done
-    parser_done = subparsers.add_parser("done", help="Mark a task as done")
-    parser_done.add_argument("id", type=int, help="Task ID")
-
-    args = parser.parse_args()
-
-    if args.command == "add":
-        add_task(args.description)
-    elif args.command == "list":
-        list_tasks()
-    elif args.command == "done":
-        mark_done(args.id)
-    else:
-        parser.print_help()
+@app.command()
+def done(id: int):
+    """Mark a task as done"""
+    mark_done(id)
+    typer.echo(f"🎯 Task #{id} marked as done!")
 
 if __name__ == "__main__":
-    main()
+    app()
+@app.command()
+def healthcheck():
+    """Simple command to check if the CLI works"""
+    typer.echo("✅ CLI is healthy and ready!")
+
+if __name__ == "__main__":
+    app()
